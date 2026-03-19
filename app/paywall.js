@@ -41,7 +41,7 @@ export default function PaywallScreen() {
   const plans = PLANS(t);
 
   return (
-    <LinearGradient colors={['#1a0533', '#2d1054', '#0d1f4e']} style={styles.gradient}>
+    <LinearGradient colors={['#FFF6EE', '#FFE9D8', '#FDE0CC']} style={styles.gradient}>
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
         {/* Language toggle */}
         <TouchableOpacity style={styles.langBtn} onPress={toggleLang} activeOpacity={0.8}>
@@ -51,7 +51,7 @@ export default function PaywallScreen() {
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           {/* Hero */}
           <View style={styles.hero}>
-            <Text style={styles.heroEmoji}>🌸</Text>
+            <Text style={styles.heroEmoji}>🌅</Text>
             <Text style={styles.heroTitle}>{t.heroTitle}</Text>
             <Text style={styles.heroSubtitle}>{t.heroSubtitle}</Text>
           </View>
@@ -100,16 +100,12 @@ export default function PaywallScreen() {
 
           {/* CTA */}
           <TouchableOpacity style={styles.ctaButton} onPress={handleSubscribe} activeOpacity={0.85}>
-            <LinearGradient
-              colors={['#C084FC', '#818CF8', '#60A5FA']}
-              start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-              style={styles.ctaGradient}
-            >
+            <View style={styles.ctaGradient}>
               <Text style={styles.ctaText}>{t.ctaButton}</Text>
               <Text style={styles.ctaSubText}>
                 {selectedPlan === 'yearly' ? t.ctaSubYearly : t.ctaSubMonthly}
               </Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
 
           <Text style={styles.terms}>{t.terms}</Text>
@@ -128,61 +124,68 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
     marginRight: 20,
     marginTop: 8,
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(180,100,60,0.1)',
     borderRadius: 20,
     paddingHorizontal: 14,
     paddingVertical: 6,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: 'rgba(180,100,60,0.2)',
   },
-  langBtnText: { color: '#E9D5FF', fontSize: 13, fontWeight: '700' },
+  langBtnText: { color: '#A0522D', fontSize: 13, fontWeight: '700' },
 
   hero: { alignItems: 'center', paddingTop: 12, marginBottom: 28 },
   heroEmoji: { fontSize: 56 },
-  heroTitle: { fontSize: 40, fontWeight: '800', color: '#FFFFFF', letterSpacing: 1.5, marginTop: 8 },
-  heroSubtitle: { fontSize: 16, color: '#C4B5FD', textAlign: 'center', marginTop: 8, lineHeight: 24 },
+  heroTitle: { fontSize: 36, fontWeight: '700', color: '#3D1F0D', letterSpacing: 0.3, marginTop: 8 },
+  heroSubtitle: { fontSize: 15, color: '#9C6B4A', textAlign: 'center', marginTop: 8, lineHeight: 22 },
 
   benefitsCard: {
-    backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 20,
-    padding: 20, marginBottom: 24, borderWidth: 1, borderColor: 'rgba(255,255,255,0.12)',
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    borderRadius: 16, padding: 20, marginBottom: 24,
+    borderWidth: 1, borderColor: 'rgba(210,140,100,0.2)',
   },
   benefitsTitle: {
-    color: '#E9D5FF', fontSize: 14, fontWeight: '700',
+    color: '#B07040', fontSize: 13, fontWeight: '600',
     letterSpacing: 1, textTransform: 'uppercase', marginBottom: 14,
   },
   benefitRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
   benefitIcon: { fontSize: 20, marginRight: 12 },
-  benefitText: { color: '#F3F4F6', fontSize: 15, flex: 1 },
+  benefitText: { color: '#5C3A1E', fontSize: 15, flex: 1 },
 
   plansRow: { flexDirection: 'row', gap: 12, marginBottom: 24 },
   planCard: {
-    flex: 1, backgroundColor: 'rgba(255,255,255,0.07)', borderRadius: 16,
-    padding: 16, alignItems: 'center', borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.1)', minHeight: 140, justifyContent: 'center',
+    flex: 1, backgroundColor: 'rgba(255,255,255,0.55)', borderRadius: 14,
+    padding: 16, alignItems: 'center', borderWidth: 1.5,
+    borderColor: 'rgba(210,140,100,0.25)', minHeight: 140, justifyContent: 'center',
   },
-  planCardSelected: { backgroundColor: 'rgba(192,132,252,0.2)', borderColor: '#C084FC' },
+  planCardSelected: {
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    borderColor: '#C97B4B',
+  },
   badge: {
-    backgroundColor: '#C084FC', borderRadius: 8,
+    backgroundColor: '#C97B4B', borderRadius: 6,
     paddingHorizontal: 8, paddingVertical: 3, marginBottom: 8,
   },
-  badgeText: { color: '#fff', fontSize: 10, fontWeight: '800', letterSpacing: 0.5 },
-  planLabel: { color: '#9CA3AF', fontSize: 13, fontWeight: '600', marginBottom: 4 },
-  planLabelSelected: { color: '#E9D5FF' },
-  planPrice: { color: '#E5E7EB', fontSize: 24, fontWeight: '800' },
-  planPriceSelected: { color: '#FFFFFF' },
-  planPeriod: { color: '#9CA3AF', fontSize: 12 },
-  planPeriodSelected: { color: '#C4B5FD' },
-  planPerMonth: { color: '#A78BFA', fontSize: 11, marginTop: 4, fontWeight: '600' },
-  planSaving: { color: '#34D399', fontSize: 11, fontWeight: '700', marginTop: 2 },
+  badgeText: { color: '#fff', fontSize: 10, fontWeight: '700', letterSpacing: 0.5 },
+  planLabel: { color: '#A07050', fontSize: 13, fontWeight: '500', marginBottom: 4 },
+  planLabelSelected: { color: '#5C3A1E' },
+  planPrice: { color: '#7A4A28', fontSize: 24, fontWeight: '700' },
+  planPriceSelected: { color: '#3D1F0D' },
+  planPeriod: { color: '#A07050', fontSize: 12 },
+  planPeriodSelected: { color: '#7A4A28' },
+  planPerMonth: { color: '#C97B4B', fontSize: 11, marginTop: 4, fontWeight: '600' },
+  planSaving: { color: '#7A9E5C', fontSize: 11, fontWeight: '600', marginTop: 2 },
   checkmark: {
     position: 'absolute', top: 10, right: 10, width: 20, height: 20,
-    borderRadius: 10, backgroundColor: '#C084FC', alignItems: 'center', justifyContent: 'center',
+    borderRadius: 10, backgroundColor: '#C97B4B', alignItems: 'center', justifyContent: 'center',
   },
   checkmarkText: { color: '#fff', fontSize: 12, fontWeight: '700' },
 
-  ctaButton: { borderRadius: 18, overflow: 'hidden', marginBottom: 16 },
-  ctaGradient: { paddingVertical: 18, alignItems: 'center' },
-  ctaText: { color: '#fff', fontSize: 18, fontWeight: '800', letterSpacing: 0.3 },
-  ctaSubText: { color: 'rgba(255,255,255,0.75)', fontSize: 12, marginTop: 4 },
-  terms: { color: '#6B7280', fontSize: 11, textAlign: 'center', lineHeight: 16 },
+  ctaButton: { borderRadius: 16, overflow: 'hidden', marginBottom: 16 },
+  ctaGradient: {
+    paddingVertical: 18, alignItems: 'center',
+    backgroundColor: '#C97B4B', borderRadius: 16,
+  },
+  ctaText: { color: '#fff', fontSize: 18, fontWeight: '700', letterSpacing: 0.3 },
+  ctaSubText: { color: 'rgba(255,255,255,0.8)', fontSize: 12, marginTop: 4 },
+  terms: { color: '#B09070', fontSize: 11, textAlign: 'center', lineHeight: 16 },
 });

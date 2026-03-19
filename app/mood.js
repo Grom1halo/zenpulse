@@ -44,11 +44,11 @@ export default function MoodScreen() {
   };
 
   return (
-    <LinearGradient colors={['#0f0c29', '#1e1040', '#0d1b2a']} style={styles.gradient}>
+    <LinearGradient colors={['#FFF6EE', '#FFE9D8', '#FDE0CC']} style={styles.gradient}>
       <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
         <View style={styles.topBar}>
           <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-            <Text style={styles.backText}>{t.back}</Text>
+            <Text style={styles.backText}>← {t.back}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.langBtn} onPress={toggleLang} activeOpacity={0.8}>
             <Text style={styles.langBtnText}>{lang === 'en' ? '🇬🇧 EN' : '🇷🇺 RU'}</Text>
@@ -93,13 +93,9 @@ export default function MoodScreen() {
                   <Text style={styles.generateText}>{t.generating}</Text>
                 </View>
               ) : (
-                <LinearGradient
-                  colors={selectedMood ? ['#C084FC', '#818CF8', '#60A5FA'] : ['#374151', '#374151']}
-                  start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
-                  style={styles.generateGradient}
-                >
+                <View style={[styles.generateInner, { backgroundColor: selectedMood ? '#C97B4B' : '#D4B8A0' }]}>
                   <Text style={styles.generateText}>{t.generate}</Text>
-                </LinearGradient>
+                </View>
               )}
             </TouchableOpacity>
           )}
@@ -136,53 +132,61 @@ export default function MoodScreen() {
 const styles = StyleSheet.create({
   gradient: { flex: 1 },
   safe: { flex: 1 },
-  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingTop: 8 },
-  backBtn: { paddingVertical: 4 },
-  backText: { color: '#9CA3AF', fontSize: 15 },
-  langBtn: {
-    backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 20,
-    paddingHorizontal: 14, paddingVertical: 6,
-    borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)',
+  topBar: {
+    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+    paddingHorizontal: 20, paddingTop: 8,
   },
-  langBtnText: { color: '#E9D5FF', fontSize: 13, fontWeight: '700' },
+  backBtn: { paddingVertical: 4 },
+  backText: { color: '#9C6B4A', fontSize: 15, fontWeight: '600' },
+  langBtn: {
+    backgroundColor: 'rgba(180,100,60,0.1)', borderRadius: 20,
+    paddingHorizontal: 14, paddingVertical: 6,
+    borderWidth: 1, borderColor: 'rgba(180,100,60,0.2)',
+  },
+  langBtnText: { color: '#A0522D', fontSize: 13, fontWeight: '700' },
+
   content: { flex: 1, paddingHorizontal: 24, paddingTop: 16, alignItems: 'center' },
-  title: { color: '#F9FAFB', fontSize: 28, fontWeight: '800', textAlign: 'center', marginBottom: 10 },
-  subtitle: { color: '#9CA3AF', fontSize: 15, textAlign: 'center', lineHeight: 22, marginBottom: 36 },
+  title: { color: '#3D1F0D', fontSize: 28, fontWeight: '800', textAlign: 'center', marginBottom: 10 },
+  subtitle: { color: '#9C6B4A', fontSize: 15, textAlign: 'center', lineHeight: 22, marginBottom: 36 },
+
   moodRow: { flexDirection: 'row', gap: 16, marginBottom: 36 },
   moodBtn: {
     alignItems: 'center', paddingVertical: 16, paddingHorizontal: 20,
-    borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.06)',
-    borderWidth: 2, borderColor: 'rgba(255,255,255,0.08)', minWidth: 90,
+    borderRadius: 20, backgroundColor: 'rgba(255,255,255,0.55)',
+    borderWidth: 2, borderColor: 'rgba(210,140,100,0.2)', minWidth: 90,
   },
-  moodBtnSelected: { backgroundColor: 'rgba(192,132,252,0.2)', borderColor: '#C084FC' },
+  moodBtnSelected: { backgroundColor: 'rgba(255,255,255,0.85)', borderColor: '#C97B4B' },
   moodEmoji: { fontSize: 36, marginBottom: 8 },
-  moodLabel: { color: '#9CA3AF', fontSize: 13, fontWeight: '600' },
-  moodLabelSelected: { color: '#E9D5FF' },
+  moodLabel: { color: '#9C6B4A', fontSize: 13, fontWeight: '600' },
+  moodLabelSelected: { color: '#3D1F0D' },
+
   generateBtn: { width: '100%', borderRadius: 16, overflow: 'hidden', marginBottom: 24 },
-  generateBtnDisabled: { opacity: 0.5 },
-  generateGradient: { paddingVertical: 18, alignItems: 'center' },
+  generateBtnDisabled: { opacity: 0.6 },
+  generateInner: { paddingVertical: 18, alignItems: 'center', borderRadius: 16 },
   loadingRow: {
     flexDirection: 'row', gap: 10, alignItems: 'center',
-    paddingVertical: 18, backgroundColor: '#374151', justifyContent: 'center', borderRadius: 16,
+    paddingVertical: 18, backgroundColor: '#D4B8A0', justifyContent: 'center', borderRadius: 16,
   },
   generateText: { color: '#fff', fontWeight: '700', fontSize: 16 },
+
   affirmationCard: {
-    width: '100%', backgroundColor: 'rgba(192,132,252,0.1)', borderRadius: 20,
-    padding: 24, borderWidth: 1, borderColor: 'rgba(192,132,252,0.3)', marginBottom: 24,
+    width: '100%', backgroundColor: 'rgba(255,255,255,0.65)', borderRadius: 20,
+    padding: 24, borderWidth: 1, borderColor: 'rgba(210,140,100,0.3)', marginBottom: 24,
   },
-  affirmationMoodLine: { color: '#C4B5FD', fontSize: 13, fontWeight: '600', marginBottom: 12 },
-  affirmationText: { color: '#F9FAFB', fontSize: 17, lineHeight: 26, fontStyle: 'italic', fontWeight: '500', marginBottom: 20 },
+  affirmationMoodLine: { color: '#C97B4B', fontSize: 13, fontWeight: '600', marginBottom: 12 },
+  affirmationText: { color: '#3D1F0D', fontSize: 17, lineHeight: 26, fontStyle: 'italic', fontWeight: '500', marginBottom: 20 },
   affirmationActions: { flexDirection: 'row', gap: 12 },
   regenerateBtn: {
-    flex: 1, backgroundColor: 'rgba(192,132,252,0.2)', borderRadius: 12,
-    paddingVertical: 12, alignItems: 'center', borderWidth: 1, borderColor: '#C084FC',
+    flex: 1, backgroundColor: 'rgba(201,123,75,0.15)', borderRadius: 12,
+    paddingVertical: 12, alignItems: 'center', borderWidth: 1, borderColor: '#C97B4B',
   },
-  regenerateBtnText: { color: '#C084FC', fontWeight: '700', fontSize: 13 },
+  regenerateBtnText: { color: '#C97B4B', fontWeight: '700', fontSize: 13 },
   resetBtn: {
-    flex: 1, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 12,
-    paddingVertical: 12, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)',
+    flex: 1, backgroundColor: 'rgba(255,255,255,0.5)', borderRadius: 12,
+    paddingVertical: 12, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(210,140,100,0.3)',
   },
-  resetBtnText: { color: '#9CA3AF', fontWeight: '600', fontSize: 13 },
+  resetBtnText: { color: '#9C6B4A', fontWeight: '600', fontSize: 13 },
+
   aiNote: { marginTop: 'auto', paddingBottom: 16 },
-  aiNoteText: { color: '#4B5563', fontSize: 12, textAlign: 'center' },
+  aiNoteText: { color: '#B09070', fontSize: 12, textAlign: 'center' },
 });
