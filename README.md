@@ -1,68 +1,98 @@
 # ZenPulse: AI Meditation App
 
-Prototype built with **React Native + Expo** as a test assignment.
+Прототип мобильного приложения «ZenPulse», собранный на **React Native + Expo** в рамках тестового задания.
 
-## Stack
-- React Native 0.83 + Expo 55
-- React Navigation v7 (Stack)
+## Стек
+- React Native 0.83 + Expo SDK 55
+- Expo Router (файловая навигация)
 - expo-linear-gradient
 - react-native-safe-area-context
-- react-native-gesture-handler / reanimated
+- react-native-web (для запуска в браузере)
+- React Context API (подписка + язык)
 
-## Run locally
+## Запуск
 ```bash
 npm install
 npx expo start
-# Scan QR with Expo Go app, or press `a` for Android emulator
+# Нажми `w` — откроет в браузере
+# Или отсканируй QR в Expo Go
 ```
 
-## Screens
-| Screen | Description |
+## Экраны
+| Экран | Описание |
 |---|---|
-| **Paywall** | Premium subscription screen — monthly/yearly plans, benefits list, "Try Free" CTA |
-| **Meditations** | Session grid — free cards playable, premium cards locked behind `isSubscribed` flag |
-| **AI Mood** | Pick a mood emoji → AI generates a personalized affirmation (mock LLM with realistic delay) |
+| **Paywall** | Экран подписки — тарифы месяц/год, список преимуществ, кнопка «Try Free» |
+| **Meditations** | Сетка сессий — бесплатные открыты, премиум заблокированы по флагу `isSubscribed` |
+| **AI Mood** | Выбор настроения (3 эмодзи) → генерация аффирмации (mock LLM с реалистичной задержкой) |
 
-## Subscription Logic
-`SubscriptionContext` holds a single `isSubscribed: boolean` flag.
+## Логика подписки
+`SubscriptionContext` хранит флаг `isSubscribed: boolean`.
 
 ```js
-// Paywall taps "Try Free" → subscribe() → navigate to Meditations
-// Meditations card tap → if (item.premium && !isSubscribed) navigate('Paywall')
+// Paywall → "Try Free" → subscribe() → router.replace('/meditations')
+// Карточка → if (item.premium && !isSubscribed) → router.push('/paywall')
 ```
 
-Premium cards show a 🔒 emoji, grayed-out color, and "Premium only" label. On tap they redirect to the Paywall.
+Премиум-карточки показывают 🔒, серый цвет и надпись "Premium only".
 
-## How AI handled mobile specifics (navigation, SafeArea)
-
-### What worked well
-- **SafeAreaView + edges prop**: Prompted with `edges={['top', 'bottom']}` — AI correctly wrapped every screen, preventing content overlap with notch/home indicator on both iOS and Android.
-- **Navigation flow**: `createStackNavigator` with `navigation.replace('Meditations')` after purchase (not `navigate`) — AI correctly used `replace` so users can't go back to Paywall via swipe.
-- **ScrollView + `contentContainerStyle`**: AI kept `flex: 1` on the container and `paddingBottom` inside `contentContainerStyle`, avoiding the classic "last item hidden behind FAB" issue.
-
-### What required manual correction
-- **`Dimensions.get('window')` for card width**: AI initially used `flex: 1` inside a `flexWrap: 'wrap'` container, which collapses to zero width. Had to explicitly prompt: *"Calculate card width as `(screenWidth - paddingH*2 - gap) / 2` and set it as a fixed pixel value."*
-- **`gap` prop in StyleSheet**: AI used `gap: 12` in the grid styles — valid in React Native 0.71+, but needed to verify RN version first.
-- **LinearGradient inside TouchableOpacity**: AI sometimes put `overflow: 'hidden'` on the wrong element, breaking the border-radius clip. Fix: `overflow: 'hidden'` on `TouchableOpacity`, gradient fills its own container.
+## Переключение языков
+`LanguageContext` хранит `lang: 'en' | 'ru'`. Кнопка показывает **текущий** язык (🇬🇧 EN / 🇷🇺 RU). Все тексты, названия сессий и категории переведены.
 
 ---
 
-## Control Question Answer
+## Трудности и как они решались
 
-### «С какими специфическими проблемами мобильной верстки ИИ справляется хуже всего?»
+### 1. Expo SDK 55 принудительно использует Expo Router
+Самая неожиданная проблема — Expo 55 игнорирует `index.js` и ожидает файловую структуру `app/`. Metro возвращал `application/json` вместо JS-бандла с ошибкой `transform.routerRoot=app`. Пришлось полностью переписать навигацию с React Navigation на **Expo Router** и поменять `"main"` в `package.json` на `"expo-router/entry"`.
 
-**Топ-3 проблемы, где ИИ требовал ручного контроля:**
+### 2. Отсутствие babel-preset-expo
+После перехода на Expo Router Metro падал с `Cannot find module 'babel-preset-expo'`. Пакет не был включён в зависимости автоматически — установили вручную: `npm install babel-preset-expo`.
 
-1. **Фиксированные размеры vs. flex на разных экранах**
-   ИИ часто предлагает `width: 160` вместо `(screenWidth - padding) / columns`. На iPhone SE (320pt wide) карточки вылезают за экран. Решение: явно промптить *"рассчитывай ширину через Dimensions.get('window').width"* и проверять на 320pt viewport.
+### 3. expo-linear-gradient в plugins
+Изначально `expo-linear-gradient` был указан в `plugins` в `app.json`, что вызывало `PluginError: Unable to resolve a valid config plugin`. У этой библиотеки нет config plugin — убрали из `plugins`, оставили только в `dependencies`.
 
-2. **SafeArea и абсолютно спозиционированные элементы**
-   FAB-кнопки и bottom-баннеры, позиционированные через `position: absolute, bottom: 24`, не учитывают высоту home indicator (34pt на iPhone без кнопки). ИИ добавлял `SafeAreaView` на контейнер, но не на сам FAB. Контроль: вручную проверять `bottom` отступы на симуляторе Pro Max и SE.
+### 4. Запуск на телефоне через WireGuard VPN
+Телефон подключался через WireGuard (IP ПК: `10.8.0.2`), но Expo Go выдавал `Failed to download remote update`. Перебрали несколько решений:
+- Добавили правила Windows Firewall для порта 8081 — не помогло
+- Попытались изменить сетевой профиль WireGuard с Public на Private — без результата
+- Установили `REACT_NATIVE_PACKAGER_HOSTNAME=10.8.0.2` — Metro стал видеть правильный интерфейс, но маршрутизация между VPN-клиентами не была настроена на сервере
+- **Итог**: использовали Chrome DevTools → Device Toolbar (эмуляция iPhone/Pixel) для демонстрации мобильного вида
 
-3. **ScrollView + KeyboardAvoidingView + flex**
-   ИИ путается, когда `flex: 1` нужен на `SafeAreaView`, но `ScrollView` должен иметь `contentContainerStyle` без `flex`. При неправильном промпте экраны либо не скроллятся, либо схлопываются. Явный промпт: *"SafeAreaView flex:1, внутри ScrollView без flex, contentContainerStyle с paddingBottom"*.
+### 5. Tunnel-режим (@expo/ngrok)
+Пробовали `npx expo start --tunnel` — пакет `@expo/ngrok` устанавливался, но сразу выдавал `CommandError`. Проблема в несовместимости версии ngrok с Node.js окружения. Tunnel не использовали.
 
-**Как я контролировал:**
-- Запускал в симуляторе на **iPhone SE (375pt)** и **Pro Max (430pt)** после каждого экрана.
-- При «поехавшей» верстке делал скриншот и промптил: *"на этом скриншоте карточки не помещаются в 2 колонки на маленьком экране, исправь расчёт ширины"*.
-- Всегда проверял `edges` prop у `SafeAreaView` — по умолчанию `['top','right','bottom','left']`, что добавляет лишние боковые отступы.
+---
+
+## Как ИИ справился с мобильной спецификой
+
+### Что получилось хорошо
+- **SafeAreaView + edges**: каждый экран обёрнут с `edges={['top','bottom']}`, контент не залезает на челку и home indicator
+- **Навигация**: `router.replace('/meditations')` после покупки (не `push`) — пользователь не может вернуться на Paywall свайпом назад
+- **ScrollView**: `flex:1` на контейнере, `contentContainerStyle` с `paddingBottom` — последний элемент не прячется за FAB-кнопку
+
+### Что потребовало ручного контроля
+- **Ширина карточек**: ИИ использовал `flex:1` внутри `flexWrap:'wrap'`, что схлопывалось в 0. Пришлось явно промптить расчёт через `Dimensions.get('window').width`
+- **FAB и SafeArea**: кнопка "AI Mood" позиционировалась без учёта home indicator. Добавили `useSafeAreaInsets()` и `bottom: insets.bottom + 16`
+- **gap в StyleSheet**: ИИ использовал `gap: 12` — работает в RN 0.71+, но нужна проверка версии
+
+---
+
+## Контрольный вопрос
+
+### «С какими специфическими проблемами мобильной верстки ИИ справляется хуже всего и как ты контролировал его работу?»
+
+**Топ-3 проблемы:**
+
+**1. Фиксированные размеры vs. адаптив**
+ИИ предлагает `width: 160` вместо `(screenWidth - padding) / columns`. На iPhone SE (375pt) карточки вылезают за экран. Решение: явно промптить *«рассчитывай ширину через Dimensions.get('window').width»* и проверять на 375pt и 430pt viewport.
+
+**2. SafeArea для абсолютных элементов**
+FAB и bottom-баннеры с `position: absolute, bottom: 24` не учитывают home indicator (34pt на iPhone без кнопки). ИИ добавлял SafeAreaView на контейнер, но не на сам FAB. Контроль: вручную проверять отступы на симуляторе SE и Pro Max.
+
+**3. ScrollView + flex + KeyboardAvoidingView**
+ИИ путается когда `flex:1` нужен на SafeAreaView, но ScrollView должен иметь `contentContainerStyle` без flex. При неправильном промпте экраны либо не скроллятся, либо схлопываются. Явный промпт: *«SafeAreaView flex:1, внутри ScrollView без flex, contentContainerStyle с paddingBottom»*.
+
+**Метод контроля:**
+- Тестировал в браузере с Device Toolbar на ширинах 375px (SE), 390px (iPhone 14), 430px (Pro Max)
+- При «поехавшей» верстке делал скриншот и описывал проблему ИИ конкретно: *«карточки не помещаются в 2 колонки, исправь расчёт ширины»*
+- Проверял `edges` у каждого SafeAreaView — лишние боковые отступы ломают grid-раскладку
